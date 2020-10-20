@@ -64,7 +64,7 @@ export default function ({ navigation, route }: Props) {
 
   // UI
   return (
-    <View style={[screens.default]}>
+    <View style={[screens.default, screens.headless]}>
       <AvoidingView>
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <View style={{ paddingHorizontal: padding }}>

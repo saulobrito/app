@@ -102,7 +102,7 @@ export default function ({ navigation, route }: Props) {
   // search for suggestions whenever user changes the input
   useEffect(() => {
     // TODO: what would be a better threshold than 3 characteres?
-    if (searchText.length <= 3) {
+    if (searchText.length === 0) {
       setAutoCompletePredictions([]);
       return;
     }

@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ProfileSituation } from 'appjusto-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, Text, ScrollView, StatusBar } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { useQueryCache } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
 

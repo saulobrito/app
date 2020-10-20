@@ -45,12 +45,12 @@ export default function () {
       <Stack.Screen
         name="BankNavigator"
         component={BankNavigator}
-        options={{ title: t('Dados bancários') }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="FleetNavigator"
         component={FleetNavigator}
-        options={{ title: t('Escolha sua frota') }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ProfileSubmitted"

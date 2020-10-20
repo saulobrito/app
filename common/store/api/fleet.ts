@@ -16,8 +16,6 @@ export default class FleetApi {
 
   // firestore
   async fetchFleets(options?: FetchFleetsOptions) {
-    // console.log(options);
-    console.log('fetchFleets: ', options?.search);
     let query = this.firestore.collection('fleets').where('situation', '==', 'approved');
     if (options?.search) {
       query = query
