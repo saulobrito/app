@@ -1,3 +1,4 @@
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { NavigationContainer } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
@@ -11,6 +12,7 @@ import { createStore } from '../store';
 import Api from '../store/api/api';
 import { getExtra } from '../utils/config';
 import { defineLocationUpdatesTask } from '../utils/location';
+import NotificationContainer from './NotificationContainer';
 import * as analytics from './analytics';
 
 const extra = getExtra();
@@ -50,10 +52,12 @@ export const AppContext = ({ children }: Props) => {
     <ApiContext.Provider value={api}>
       <Provider store={store}>
         <ReactQueryCacheProvider queryCache={queryCache}>
-          <NavigationContainer linking={linking}>
-            {children}
-            <Toast />
-          </NavigationContainer>
+          <NotificationContainer>
+            <NavigationContainer linking={linking}>
+              <ActionSheetProvider>{children}</ActionSheetProvider>
+              <Toast />
+            </NavigationContainer>
+          </NotificationContainer>
         </ReactQueryCacheProvider>
       </Provider>
     </ApiContext.Provider>

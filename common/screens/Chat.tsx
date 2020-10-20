@@ -1,8 +1,9 @@
 import { RouteProp } from '@react-navigation/native';
-import { ChatMessage, WithId } from 'appjusto-types';
+import { ChatMessage, PushMessage, WithId } from 'appjusto-types';
 import React, { useState, useCallback, useContext, useMemo, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
+import { useQuery, useQueryCache } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { t } from '../../strings';
@@ -11,7 +12,7 @@ import DefaultButton from '../components/buttons/DefaultButton';
 import PaddedView from '../components/containers/PaddedView';
 import RoundedProfileImg from '../components/icons/RoundedProfileImg';
 import DefaultInput from '../components/inputs/DefaultInput';
-import { markMessageAsRead, sendMessage } from '../store/order/actions';
+import { sendMessage } from '../store/order/actions';
 import { getOrderById, getOrderChat, groupOrderChatMessages } from '../store/order/selectors';
 import { getUser } from '../store/user/selectors';
 import { screens, colors, padding, texts, borders } from '../styles';
@@ -33,15 +34,13 @@ export default function ({ route }: Props) {
   // context
   const api = useContext(ApiContext);
   const dispatch = useDispatch<AppDispatch>();
+  const queryCache = useQueryCache();
   const { orderId } = route.params;
 
   // app state
   const user = useSelector(getUser)!;
   const order = useSelector(getOrderById)(orderId);
-  const names = {
-    [order.courier!.id]: order.courier!.name,
-    [order.consumer!.id]: order.consumer!.name ?? t('Cliente'),
-  };
+  const orderChatNotificationQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
 
   // screen state
   const [inputText, setInputText] = useState('');
@@ -54,11 +53,14 @@ export default function ({ route }: Props) {
     setInputText('');
   }, [order, inputText]);
   useEffect(() => {
-    if (messages.length > 0) {
-      dispatch(markMessageAsRead(orderId, messages[messages.length - 1]));
-    }
-  }, [messages]);
+    if (orderChatNotificationQuery.data)
+      queryCache.setQueryData(['notifications', 'order-chat'], []);
+  }, [orderChatNotificationQuery.data]);
   // UI
+  const names = {
+    [order.courier!.id]: order.courier!.name,
+    [order.consumer!.id]: order.consumer!.name ?? t('Cliente'),
+  };
   return (
     <View style={[screens.default]}>
       <KeyboardAwareFlatList

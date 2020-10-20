@@ -1,16 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { OrderMatchPushMessageData, PushMessageData } from 'appjusto-types';
-import * as Notifications from 'expo-notifications';
-import React, { useEffect, useCallback } from 'react';
+import { ChatPushMessageData, OrderMatchPushMessageData, PushMessage } from 'appjusto-types';
+import React, { useEffect } from 'react';
 import { Image } from 'react-native';
+import { useQuery, useQueryCache } from 'react-query';
 import { useSelector } from 'react-redux';
 
 import * as icons from '../../../assets/icons';
-import useNotification from '../../../common/hooks/useNotification';
 import useObserveOrders from '../../../common/hooks/useObserveOrders';
 import { getCourier, getCourierStatus } from '../../../common/store/courier/selectors';
-import { getOngoingOrders } from '../../../common/store/order/selectors';
 import { colors } from '../../../common/styles';
 import { t } from '../../../strings';
 import { ApprovedParamList } from '../types';
@@ -27,67 +25,55 @@ type Props = {
 
 const Tab = createBottomTabNavigator<MainParamList>();
 export default function ({ navigation }: Props) {
+  // context
+  const queryCache = useQueryCache();
+  const matchingQuery = useQuery<PushMessage[]>(['notifications', 'matching']);
+  const chatQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
+
   // app state
-  const courier = useSelector(getCourier);
+  const courier = useSelector(getCourier)!;
   const status = useSelector(getCourierStatus);
-  const ongoingOrders = useSelector(getOngoingOrders);
 
   // effects
-  // subscribe for order changes
-  useObserveOrders({ deliveredBy: courier!.id! });
-
-  // when a courier accept the order
+  useObserveOrders({ deliveredBy: courier.id });
+  // matching notifications
   useEffect(() => {
-    // as the courier can only dispatch a single order at a time ongoingOrders should be always 0 or 1
-    if (ongoingOrders.length > 0) {
-      const [order] = ongoingOrders;
-      // navigation.navigate('OngoingDelivery', { orderId: order.id });
-    }
-  }, [ongoingOrders]);
-
-  // handlers
-  const notificationHandler = useCallback(
-    (content: Notifications.NotificationContent) => {
-      console.log('notificationHandler');
-      const data = (content.data as unknown) as PushMessageData;
-      console.log(data);
-      if (data.action === 'matching') {
-        // should always be true as couriers should receive matching notifications only when they're available
-        if (status === 'available') {
-          navigation.navigate('MatchingNavigator', {
-            screen: 'Matching',
-            params: {
-              matchRequest: data as OrderMatchPushMessageData,
-            },
-          });
-        }
-      } else if (data.action === 'order-chat') {
-        // navigation.navigate('OngoingDelivery', {
-        //   orderId: (data as ChatPushMessageData).orderId,
-        //   newMessage: true,
-        // });
+    if (!matchingQuery.data || matchingQuery.data.length === 0) return;
+    const [notification] = matchingQuery.data;
+    if (notification) {
+      // should always be true as couriers should receive matching notifications only when they're available
+      if (status === 'available') {
+        const data = notification.data as OrderMatchPushMessageData;
+        navigation.navigate('MatchingNavigator', {
+          screen: 'Matching',
+          params: {
+            matchRequest: data,
+          },
+        });
       }
-    },
-    [navigation, status]
-  );
-  useNotification(notificationHandler);
-
-  // test only
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigation.navigate('Matching', {
-  //       matchRequest: {
-  //         orderId: '12',
-  //         courierFee: '10',
-  //         originAddress: 'Shopping Iguatemi - Edson Queiroz, Fortaleza - CE, 60810-350, Brasil',
-  //         destinationAddress:
-  //           'Rua Canuto de Aguiar, 500 - Meireles, Fortaleza - CE, 60160-120, Brasil',
-  //         distanceToOrigin: 2,
-  //         totalDistance: 10,
-  //       },
-  //     });
-  //   }, 50);
-  // }, []);
+      // remove from cache
+      queryCache.setQueryData(
+        ['notifications', 'matching'],
+        (notifications: PushMessage[] | undefined) =>
+          (notifications ?? []).filter((item) => item.id !== notification.id)
+      );
+    }
+  }, [matchingQuery.data]);
+  // order chat notifications
+  useEffect(() => {
+    if (!chatQuery.data || chatQuery.data.length === 0) return;
+    const [notification] = chatQuery.data;
+    if (notification.clicked) {
+      const data = notification.data as ChatPushMessageData;
+      navigation.navigate('OngoingNavigator', {
+        screen: 'OngoingDelivery',
+        params: {
+          orderId: data.orderId,
+          newMessage: true,
+        },
+      });
+    }
+  }, [chatQuery.data]);
 
   return (
     <Tab.Navigator

@@ -102,17 +102,3 @@ export const groupOrderChatMessages = (messages: WithId<ChatMessage>[]) =>
     // use as id for chat group the id of the first message of the group
     return [{ id: message.id, from: message.from, messages: [message] }, ...groups];
   }, []);
-
-export const getLastReadMessage = createSelector(getOrderState, (orderState) =>
-  memoize((orderId: string) => orderState.lastChatMessageReadByOrderId[orderId] ?? null)
-);
-
-export const getOrderChatUnreadCount = (
-  messages: WithId<ChatMessage>[],
-  lastMessageRead: WithId<ChatMessage>
-) => {
-  if (messages.length === 0) return 0;
-  if (!lastMessageRead) return messages.length;
-  const index = messages.findIndex((value) => value.id === lastMessageRead.id);
-  return messages.length - index - 1;
-};

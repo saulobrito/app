@@ -1,5 +1,8 @@
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import React from 'react';
+import { ChatPushMessageData, PushMessage } from 'appjusto-types';
+import React, { useEffect } from 'react';
+import { useQuery } from 'react-query';
 
 import ArrowBox from '../../common/components/views/ArrowBox';
 import Chat from '../../common/screens/Chat';
@@ -9,6 +12,7 @@ import { t } from '../../strings';
 import ProfileEdit from '../profile/ProfileEdit';
 import ProfileAddCard from '../profile/payment/ProfileAddCard';
 import ProfilePaymentMethods from '../profile/payment/ProfilePaymentMethods';
+import { LoggedParamList } from '../types';
 import Home from './Home';
 import AddressComplete from './orders/AddressComplete';
 import CancelOrder from './orders/CancelOrder';
@@ -21,8 +25,32 @@ import CreateOrderP2P from './orders/p2p-order/CreateOrderP2P';
 import TransportableItems from './orders/p2p-order/TransportableItems';
 import { HomeNavigatorParamList } from './types';
 
+type ScreenNavigationProp = BottomTabNavigationProp<LoggedParamList, 'HomeNavigator'>;
+
+type Props = {
+  navigation: ScreenNavigationProp;
+};
+
 const Stack = createStackNavigator<HomeNavigatorParamList>();
-export default function () {
+export default function ({ navigation }: Props) {
+  const orderChatNotificationQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
+
+  // order chat notifications
+  useEffect(() => {
+    if (!orderChatNotificationQuery.data || orderChatNotificationQuery.data.length === 0) return;
+    const [notification] = orderChatNotificationQuery.data;
+    if (notification.clicked) {
+      const data = notification.data as ChatPushMessageData;
+      navigation.navigate('HomeNavigator', {
+        screen: 'OngoingOrder',
+        params: {
+          orderId: data.orderId,
+          newMessage: true,
+        },
+      });
+    }
+  }, [orderChatNotificationQuery.data]);
+
   return (
     <Stack.Navigator
       screenOptions={() => ({

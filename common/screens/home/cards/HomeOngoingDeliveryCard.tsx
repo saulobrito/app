@@ -1,20 +1,14 @@
-import { Order, WithId } from 'appjusto-types';
-import React, { useMemo } from 'react';
+import { Order, PushMessage, WithId } from 'appjusto-types';
+import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
 
 import * as icons from '../../../../assets/icons';
 import { t } from '../../../../strings';
 import PaddedView from '../../../components/containers/PaddedView';
 import ShowIf from '../../../components/views/ShowIf';
-import {
-  getLastReadMessage,
-  getOrderChat,
-  getOrderChatUnreadCount,
-} from '../../../store/order/selectors';
 import { borders, colors, halfPadding, padding, texts } from '../../../styles';
-import HomeCard from './HomeCard';
 
 type Props = {
   order: WithId<Order>;
@@ -23,16 +17,8 @@ type Props = {
 
 export default function ({ order, onSelect }: Props) {
   // app state
-  const getOrderChatByOrderId = useSelector(getOrderChat);
-  const getLastReadMessageByOrderId = useSelector(getLastReadMessage);
-
-  // state
-  const unreadCount = useMemo(() => {
-    const messages = getOrderChatByOrderId(order.id);
-    const lastReadMessage = getLastReadMessageByOrderId(order.id);
-    const total = getOrderChatUnreadCount(messages, lastReadMessage);
-    return total;
-  }, [getOrderChatByOrderId]);
+  const orderChatNotificationQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
+  const unreadCount = orderChatNotificationQuery.data?.length ?? 0;
 
   // UI
   let detail = '';

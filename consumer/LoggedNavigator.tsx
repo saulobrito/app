@@ -22,18 +22,19 @@ export default function () {
   // context
   const dispatch = useDispatch<AppDispatch>();
   const api = useContext(ApiContext);
+
   // app state
   const flavor = useSelector(getFlavor);
   const user = useSelector(getUser);
   const consumer = useSelector(getConsumer);
 
   // side effects
+  // subscribe for order changes
+  useObserveOrders({ createdBy: user?.uid });
   // subscribe for profile changes
   useEffect(() => {
     return dispatch(observeProfile(api)(flavor, user!.uid));
   }, []);
-  // subscribe for order changes
-  useObserveOrders({ createdBy: user?.uid });
 
   // UI
   if (consumer?.situation !== 'approved') {

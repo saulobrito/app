@@ -1,4 +1,3 @@
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import React from 'react';
 import { LogBox } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -38,9 +37,7 @@ export default () => {
     <PreloadAssets>
       {() => (
         <AppContext>
-          <ActionSheetProvider>
-            <App />
-          </ActionSheetProvider>
+          <App />
         </AppContext>
       )}
     </PreloadAssets>
