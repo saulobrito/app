@@ -1,7 +1,9 @@
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useContext, useCallback } from 'react';
+import { OrderMatchPushMessageData, PushMessage } from 'appjusto-types';
+import React, { useContext, useCallback, useEffect } from 'react';
 import { Text, View, Image, ActivityIndicator } from 'react-native';
+import { useQueryCache } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import * as icons from '../../../assets/icons';
@@ -31,11 +33,30 @@ export default function ({ navigation, route }: Props) {
   // context
   const api = useContext(ApiContext);
   const dispatch = useDispatch<AppDispatch>();
-  const { matchRequest } = route.params;
-  const { orderId } = matchRequest;
+  // const queryCache = useQueryCache();
+  const { notification } = route.params;
+  const {
+    orderId,
+    courierFee,
+    distanceToOrigin,
+    originAddress,
+    destinationAddress,
+    totalDistance,
+  } = notification.data as OrderMatchPushMessageData;
 
   // app state
   const busy = useSelector(getUIBusy);
+
+  // effects
+  // useEffect(() => {
+  //   queryCache.setQueryData(
+  //     ['notifications', 'matching'],
+  //     [
+  //       (notifications: PushMessage[] | undefined) =>
+  //         (notifications ?? []).filter((item) => item.id !== notification.id),
+  //     ]
+  //   );
+  // }, []);
 
   // handlers
   const acceptHandler = useCallback(async () => {
@@ -50,11 +71,11 @@ export default function ({ navigation, route }: Props) {
     } catch (error) {
       navigation.replace('MatchingError');
     }
-  }, [matchRequest]);
+  }, []);
 
   const rejectHandler = useCallback(() => {
     navigation.replace('RefuseDelivery', { orderId });
-  }, [matchRequest]);
+  }, []);
 
   // UI
   if (busy)
@@ -72,7 +93,7 @@ export default function ({ navigation, route }: Props) {
           <Text style={[texts.big, { color: colors.darkGreen }]}>
             {t('Nova corrida para você!')}
           </Text>
-          <Text style={[texts.huge]}>{formatCurrency(matchRequest.courierFee)}</Text>
+          <Text style={[texts.huge]}>{formatCurrency(courierFee)}</Text>
         </View>
         <View style={{ flex: 1 }} />
         {/* body */}
@@ -81,7 +102,7 @@ export default function ({ navigation, route }: Props) {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={icons.transit} style={{ width: 32, height: 32, marginRight: padding }} />
             <Text style={[texts.medium]}>
-              {formatDistance(matchRequest.distanceToOrigin)} {t('até a retirada')}
+              {formatDistance(distanceToOrigin)} {t('até a retirada')}
             </Text>
           </View>
           <View
@@ -102,7 +123,7 @@ export default function ({ navigation, route }: Props) {
               <Text style={[texts.default, { color: colors.darkGreen }]}>{t('Retirada')}</Text>
               <View style={{ flexDirection: 'row' }}>
                 <Text style={[texts.medium, { flexWrap: 'wrap' }]} numberOfLines={3}>
-                  {matchRequest.originAddress}
+                  {originAddress}
                 </Text>
               </View>
             </View>
@@ -125,7 +146,7 @@ export default function ({ navigation, route }: Props) {
               <Text style={[texts.default, { color: colors.darkGreen }]}>{t('Entrega')}</Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                 <Text style={[texts.medium, { flexWrap: 'wrap' }]} numberOfLines={3}>
-                  {matchRequest.destinationAddress}
+                  {destinationAddress}
                 </Text>
               </View>
             </View>
@@ -145,7 +166,7 @@ export default function ({ navigation, route }: Props) {
               style={{ width: 32, height: 32, marginRight: padding }}
             />
             <Text style={[texts.medium]}>
-              {formatDistance(matchRequest.totalDistance)} {t('no percurso total')}
+              {formatDistance(totalDistance)} {t('no percurso total')}
             </Text>
           </View>
         </View>

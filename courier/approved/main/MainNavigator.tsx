@@ -32,7 +32,6 @@ export default function ({ navigation }: Props) {
 
   // app state
   const courier = useSelector(getCourier)!;
-  const status = useSelector(getCourierStatus);
 
   // effects
   useObserveOrders({ deliveredBy: courier.id });
@@ -41,16 +40,12 @@ export default function ({ navigation }: Props) {
     if (!matchingQuery.data || matchingQuery.data.length === 0) return;
     const [notification] = matchingQuery.data;
     if (notification) {
-      // should always be true as couriers should receive matching notifications only when they're available
-      if (status === 'available') {
-        const data = notification.data as OrderMatchPushMessageData;
-        navigation.navigate('MatchingNavigator', {
-          screen: 'Matching',
-          params: {
-            matchRequest: data,
-          },
-        });
-      }
+      navigation.navigate('MatchingNavigator', {
+        screen: 'Matching',
+        params: {
+          notification,
+        },
+      });
       // remove from cache
       queryCache.setQueryData(
         ['notifications', 'matching'],

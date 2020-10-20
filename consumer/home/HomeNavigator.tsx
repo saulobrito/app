@@ -33,12 +33,12 @@ type Props = {
 
 const Stack = createStackNavigator<HomeNavigatorParamList>();
 export default function ({ navigation }: Props) {
-  const orderChatNotificationQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
+  const chatQuery = useQuery<PushMessage[]>(['notifications', 'order-chat']);
 
   // order chat notifications
   useEffect(() => {
-    if (!orderChatNotificationQuery.data || orderChatNotificationQuery.data.length === 0) return;
-    const [notification] = orderChatNotificationQuery.data;
+    if (!chatQuery.data || chatQuery.data.length === 0) return;
+    const [notification] = chatQuery.data;
     if (notification.clicked) {
       const data = notification.data as ChatPushMessageData;
       navigation.navigate('HomeNavigator', {
@@ -49,7 +49,7 @@ export default function ({ navigation }: Props) {
         },
       });
     }
-  }, [orderChatNotificationQuery.data]);
+  }, [chatQuery.data]);
 
   return (
     <Stack.Navigator

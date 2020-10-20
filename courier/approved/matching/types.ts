@@ -1,8 +1,8 @@
-import { OrderMatchPushMessageData } from 'appjusto-types';
+import { PushMessage } from 'appjusto-types';
 
 export type MatchingParamList = {
   Matching: {
-    matchRequest: OrderMatchPushMessageData;
+    notification: PushMessage;
   };
   RefuseDelivery: {
     orderId: string;
