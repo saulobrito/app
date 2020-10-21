@@ -1,9 +1,8 @@
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { OrderMatchPushMessageData, PushMessage } from 'appjusto-types';
-import React, { useContext, useCallback, useEffect } from 'react';
+import { OrderMatchPushMessageData } from 'appjusto-types';
+import React, { useContext, useCallback } from 'react';
 import { Text, View, Image, ActivityIndicator } from 'react-native';
-import { useQueryCache } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import * as icons from '../../../assets/icons';
@@ -33,7 +32,6 @@ export default function ({ navigation, route }: Props) {
   // context
   const api = useContext(ApiContext);
   const dispatch = useDispatch<AppDispatch>();
-  // const queryCache = useQueryCache();
   const { notification } = route.params;
   const {
     orderId,
@@ -46,17 +44,6 @@ export default function ({ navigation, route }: Props) {
 
   // app state
   const busy = useSelector(getUIBusy);
-
-  // effects
-  // useEffect(() => {
-  //   queryCache.setQueryData(
-  //     ['notifications', 'matching'],
-  //     [
-  //       (notifications: PushMessage[] | undefined) =>
-  //         (notifications ?? []).filter((item) => item.id !== notification.id),
-  //     ]
-  //   );
-  // }, []);
 
   // handlers
   const acceptHandler = useCallback(async () => {
