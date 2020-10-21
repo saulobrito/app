@@ -47,6 +47,13 @@ export default function ({ children }: Props) {
 
     if (!alreadyAdded) {
       add(id, data, true);
+    } else {
+      // if was already added, change clicked to true
+      queryCache.setQueryData(
+        ['notifications', data.action],
+        (notifications: PushMessage[] | undefined) =>
+          (notifications ?? []).map((n) => ({ ...n, clicked: true }))
+      );
     }
     // dismiss all other notifications of this type
     queryCache
