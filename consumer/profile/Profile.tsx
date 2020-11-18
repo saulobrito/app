@@ -52,17 +52,22 @@ export default function ({ navigation }: Props) {
           <ConfigItem
             title={t('Seus dados')}
             subtitle={t('Edite seus dados pessoais')}
-            onPress={() => navigation.navigate('ProfileEdit')}
+            // onPress={() => navigation.navigate('ProfileEdit')}
+            onPress={() => navigation.navigate('ProfileNavigator', { screen: 'ProfileEdit' })}
           />
           <ConfigItem
             title={t('Formas de pagamento')}
             subtitle={t('Edite suas formas de pagamento')}
-            onPress={() => navigation.navigate('ProfilePaymentMethods')}
+            // onPress={() => navigation.navigate('ProfilePaymentMethods')}
+            onPress={() =>
+              navigation.navigate('ProfileNavigator', { screen: 'ProfilePaymentMethods' })
+            }
           />
           <ConfigItem
             title={t('Termos de uso e política de privacidade')}
             subtitle={t('Leia os termos de uso do AppJusto')}
-            onPress={() => navigation.navigate('Terms')}
+            // onPress={() => navigation.navigate('Terms')}
+            onPress={() => navigation.navigate('ProfileNavigator', { screen: 'Terms' })}
           />
           <ConfigItem
             title={t('Sair do App')}
@@ -77,7 +82,8 @@ export default function ({ navigation }: Props) {
               'Todos os seus dados serão apagados do nosso sistema e você não fará mais parte do AppJusto'
             )}
             bottomBorder={false}
-            onPress={() => navigation.navigate('ProfileErase')}
+            // onPress={() => navigation.navigate('ProfileErase')}
+            onPress={() => navigation.navigate('ProfileNavigator', { screen: 'ProfileErase' })}
           />
         </PaddedView>
       </ScrollView>

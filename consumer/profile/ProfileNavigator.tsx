@@ -7,10 +7,10 @@ import Terms from '../../common/screens/unlogged/Terms';
 import { t } from '../../strings';
 import Profile from './Profile';
 import ProfileEdit from './ProfileEdit';
+import PaymentMethodDetail from './payment/PaymentMethodDetail';
 import ProfileAddCard from './payment/ProfileAddCard';
 import ProfilePaymentMethods from './payment/ProfilePaymentMethods';
 import { ProfileParamList } from './types';
-import PaymentMethodDetail from './payment/PaymentMethodDetail';
 
 const Stack = createStackNavigator<ProfileParamList>();
 export default function () {
