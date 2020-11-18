@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import React, { useEffect, useContext } from 'react';
 import { ActivityIndicator, Image, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,14 +12,15 @@ import { observeProfile } from '../common/store/user/actions';
 import { getUser } from '../common/store/user/selectors';
 import { colors, screens } from '../common/styles';
 import { t } from '../strings';
-import ConsumerBottomTabNavigator from './ConsumerBottomTabNavigator';
 import HistoryNavigator from './history/HistoryNavigator';
+import OrderHistory from './history/OrderHistory';
+import Home from './home/Home';
 import HomeNavigator from './home/HomeNavigator';
+import Profile from './profile/Profile';
 import ProfileNavigator from './profile/ProfileNavigator';
 import { LoggedParamList } from './types';
 
-// const Tab = createBottomTabNavigator<LoggedParamList>();
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator<LoggedParamList>();
 export default function () {
   // context
   const dispatch = useDispatch<AppDispatch>();
@@ -51,41 +51,32 @@ export default function () {
     );
   }
   return (
-    <Stack.Navigator
-      screenOptions={() => ({
-        // headerBackImage: () => <ArrowBox flipped />,
-        headerBackTitleVisible: false,
-      })}
-      // screenOptions={() => ({
-      //   headerBackImage: () => <ArrowBox flipped />,
-      //   headerBackTitleVisible: false,
-      // })}
+    <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: colors.black,
+        inactiveTintColor: colors.black,
+        activeBackgroundColor: colors.green,
+        inactiveBackgroundColor: colors.white,
+      }}
     >
-      <Stack.Screen
-        name="ConsumerBottomTabNavigator"
-        component={ConsumerBottomTabNavigator}
-        options={
-          {
-            // title: t('Início'),
-            // tabBarIcon: () => <Image source={icons.home} />,
-          }
-        }
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          title: t('Início'),
+          tabBarIcon: () => <Image source={icons.home} />,
+        }}
       />
-      <Stack.Screen
-        name="HomeNavigator"
-        component={HomeNavigator}
-        options={{ title: t('Início') }}
+      <Tab.Screen
+        name="OrderHistory"
+        component={OrderHistory}
+        options={{ title: t('Seus pedidos'), tabBarIcon: () => <Image source={icons.orders} /> }}
       />
-      <Stack.Screen
-        name="HistoryNavigator"
-        component={HistoryNavigator}
-        options={{ title: t('Seus pedidos') }}
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{ title: t('Sua conta'), tabBarIcon: () => <Image source={icons.user} /> }}
       />
-      <Stack.Screen
-        name="ProfileNavigator"
-        component={ProfileNavigator}
-        options={{ title: t('Sua conta') }}
-      />
-    </Stack.Navigator>
+    </Tab.Navigator>
   );
 }
