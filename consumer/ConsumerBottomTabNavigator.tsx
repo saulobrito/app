@@ -10,7 +10,7 @@ import { getFlavor } from '../common/store/config/selectors';
 import { getConsumer } from '../common/store/consumer/selectors';
 import { observeProfile } from '../common/store/user/actions';
 import { getUser } from '../common/store/user/selectors';
-import { colors, screens } from '../common/styles';
+import { borders, colors, screens, texts } from '../common/styles';
 import { t } from '../strings';
 import HistoryNavigator from './history/HistoryNavigator';
 import OrderHistory from './history/OrderHistory';
@@ -57,6 +57,11 @@ export default function () {
         inactiveTintColor: colors.black,
         activeBackgroundColor: colors.green,
         inactiveBackgroundColor: colors.white,
+        tabStyle: {
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
+        labelStyle: { ...texts.small },
       }}
     >
       <Tab.Screen

@@ -62,7 +62,7 @@ export default function ({ route, navigation }: Props) {
             comment: rejectionComment,
           })
         );
-        navigation.replace('Home');
+        navigation.navigate('Home');
       } catch (error) {
         dispatch(showToast(error.toString()));
       }

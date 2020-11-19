@@ -89,6 +89,11 @@ export default function () {
           headerShown: false,
         }}
       />
+      {/* <Stack.Screen
+        name="HomeNavigator"
+        component={HomeNavigator}
+        options={{ title: t('Novo pedido') }}
+      /> */}
       <Stack.Screen
         name="CreateOrderP2P"
         component={CreateOrderP2P}
